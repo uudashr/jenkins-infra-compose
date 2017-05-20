@@ -1,0 +1,60 @@
+version: '3.1'
+services:
+  jenkins:
+    image: jenkinsci/jenkins:lts
+    depends_on:
+      - dockerd
+      - jenkins-slave-lucian
+      - jenkins-slave-velkan
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ~/temp/docker/jenkins/master:/var/jenkins_home
+    networks:
+      - front-tier
+      - back-tier
+  dockerd:
+    image: docker:dind
+    privileged: true
+    volumes:
+      - ~/temp/docker/jenkins/dind:/var/lib/docker
+    networks:
+      - back-tier
+  jenkins-slave-lucian:
+    image: jenkinsci/ssh-slave
+    depends_on:
+      - dockerd
+    volumes:
+      - ~/temp/docker/jenkins/slave/lucian:/home/jenkins
+    env_file: slave.env
+    networks:
+      - back-tier
+  jenkins-slave-velkan:
+    image: jenkinsci/ssh-slave
+    depends_on:
+      - dockerd
+    volumes:
+      - ~/temp/docker/jenkins/slave/velkan:/home/jenkins
+    env_file: slave.env
+    networks:
+      - back-tier
+  # jenkins-slave-corvin:
+  #   image: jenkinsci/jnlp-slave
+  #   depends_on:
+  #     - dockerd
+  #   environment:
+  #     - JENKINS_URL=http://jenkins:8080
+  #     - JENKINS_TUNNEL=jenkins:50000
+  #     - JENKINS_AGENT_NAME=corvin
+  #     - JENKINS_SECRET=383ff8f6af178a36b11f708199ac6130b3ea6edc3c355e474ac50ff868255ca9
+  #   volumes:
+  #     - ~/temp/docker/jenkins/slave/corvin:/home/jenkins
+  #   networks:
+  #     - front-tier
+
+networks:
+  front-tier:
+    driver: bridge
+  back-tier:
+    driver: bridge
