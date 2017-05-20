@@ -35,7 +35,7 @@ DOCKER_HOST=tcp://dockerd:2375
 or manually by using `tool` command on Pipeline script
 ```groovy
 node {
-  # Need to configure tool on 'Global Tool Configuration'
+  // Need to configure tool on 'Global Tool Configuration'
   def root = tool name: 'Docker'
   withEnv(["PATH+DOCKER=${root}/bin", "DOCKER_HOST=tcp://dockerd:2375"]) {
     sh "docker version"
