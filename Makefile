@@ -3,9 +3,11 @@ MASTER_DIR=$(JENKINS_DIR)/master
 DIND_DIR=$(JENKINS_DIR)/dind
 SLAVE_DIR=$(JENKINS_DIR)/slave
 
-key:
-	@mkdir -p key
-	@ssh-keygen -t rsa -f key/jenkins_slave_rsa -C "jenkins-slave"
+keys:
+	@mkdir -p keys
+	@ssh-keygen -t rsa -f keys/jenkins_slave_rsa -C "jenkins-slave"
+
+slave.env: keys
 	@echo JENKINS_SLAVE_SSH_PUBKEY=$(shell cat keys/jenkins_slave_rsa.pub) > slave.env
 
 .PHONY: clean-master
